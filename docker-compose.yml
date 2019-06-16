@@ -16,6 +16,7 @@ services:
             - "9000:9000"
         volumes:
             - /data/wwwroot/:/data/wwwroot/
+            - ./php-fpm/Conf/php.ini:/usr/local/etc/php/php.ini:rw
         depends_on:
             - mysql
         

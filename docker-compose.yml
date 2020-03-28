@@ -7,6 +7,7 @@ services:
             - "3306:3306"
         volumes:
             - ./mysql/data:/var/lib/mysql/
+            - ./mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
         environment:
             MYSQL_ROOT_PASSWORD: lxl
     
@@ -15,7 +16,7 @@ services:
         ports:
             - "9000:9000"
         volumes:
-            - /data/wwwroot/:/data/wwwroot/
+            - ./wwwroot/:/data/wwwroot/
             - ./php-fpm/Conf/php.ini:/usr/local/etc/php/php.ini:rw
         depends_on:
             - mysql
@@ -24,10 +25,28 @@ services:
         image: "nginx:1.17"
         ports:
             - "80:80"
+        links:
+            - "php-fpm"
         volumes:
-            - /data/wwwroot/:/data/wwwroot/
-            - /data/log/nginx/:/var/log/nginx/
+            - ./wwwroot/:/data/wwwroot/
+            - ./logs/nginx/:/var/log/nginx/
             - ./nginx/conf.d/:/etc/nginx/conf.d
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
             - php-fpm
+    
+    node:
+        build: ./node10.15.3
+        tty: true         # 控制终端
+        ports: 
+            - "9090:8080"
+            - "9527:9527" # vue-element-admin 测试端口
+            - "9528:9528" # vue-admin-template 测试端口
+        volumes:
+            - ./wwwroot/:/opt/htdocs
+
+    redis:
+        image: "redis:5.0.8"
+        ports:
+            - "6379:6379"
+        

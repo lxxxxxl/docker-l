@@ -18,21 +18,20 @@ services:
         volumes:
             - ./wwwroot/:/data/wwwroot/
             - ./php-fpm/Conf/php.ini:/usr/local/etc/php/php.ini:rw
-        depends_on:
-            - mysql
+        links:
+            - mysql:mysql
+            - redis:redis
         
     nginx:
         image: "nginx:1.17"
         ports:
             - "80:80"
-        links:
-            - "php-fpm"
         volumes:
             - ./wwwroot/:/data/wwwroot/
             - ./logs/nginx/:/var/log/nginx/
             - ./nginx/conf.d/:/etc/nginx/conf.d
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-        depends_on:
+        links:
             - php-fpm
     
     node:
